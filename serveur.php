@@ -79,5 +79,27 @@ if(isset($_REQUEST["operation"])){//operation REQUEST englobe ts les types de pa
             die();
         }
     }
+    
+    // demande de modification
+    elseif($_REQUEST["operation"]=="update"){
+         try{
+             //récupération des données en post
+             $lesdonnees =$REQUEST["lesdonnees"];//!mêmes noms à mettre dans android
+             $donnee= json_decode($lesdonnees);//décoder le json
+             $id=$donnee[0];//j'ai remplacé $datemesure de serveurcoach par id car les 2 corresondaient à la PK !
+                          
+             // modification dans la bd
+             print("update%");
+             $cnx= connexionPDO();
+             $larequete = " update from profil where id=$id";
+             print ($larequete);
+             $req= $cnx->prepare($larequete);
+             $req->execute();
+            
+        }catch(PDOException $e){
+            print "Erreur !%".$e->getMessage();
+            die();
+        }
+    }
 }
 ?>
