@@ -1,6 +1,8 @@
 <?php
-include "fonctions.php";
+include "functions.php";
 
+var_dump($_REQUEST);//affiche le contenu d'une variable ex :http://localhost/serveur.php?langue=fr&category=1 va afficher les infos correspondantes dans ma table. le ? correspond à la requête
+ 
 //controle de réception de param
 if(isset($_REQUEST["operation"])){//operation REQUEST englobe ts les types de param, operation == param dans android à envoyer
     
@@ -9,23 +11,26 @@ if(isset($_REQUEST["operation"])){//operation REQUEST englobe ts les types de pa
          try{
              //récupération des données en post
              $lesdonnees =$REQUEST["lesdonnees"];//!mêmes noms à mettre dans android
+             //`id`, `langue`, `question`, `indice`, `reponse`, `category`, `level`, `dateceration`
              $donnee= json_decode($lesdonnees);//décoder le json
-             $datemesure=$donnee[0];
-             $poids=$donnee[1];
-             $taille=$donnee[2];
-             $age=$donnee[3];
-             $sexe=$donnee[4];
-             
+             $langue=$donnee[0];
+             $question=$donnee[1];
+             $indice=$donnee[2];
+             $reponse=$donnee[3];
+             $category=$donnee[4];
+             $level=$donnee[5];
+            
+                 
              // insersion dans la bd
              print("enreg%");
              $cnx= connexionPDO();
-             $larequete = "insert into profil (datemesure,poids,taille,age,sexe)";
-             $larequete.="values(\"$datemesure\",$poids,$taille,$age,$sexe)";
-             //$larequete .="values(NOW(),$poids,$taille,$age,$sexe)";
+             $larequete = "insert into profil (langue,question,indice,reponse,category,level)";
+             $larequete.="values($langue,$question,$indice,$reponse,$categroy,$level)";
              print ($larequete);
              $req= $cnx->prepare($larequete);
              $req->execute();
-            
+             
+             
         }catch(PDOException $e){
             print "Erreur !%".$e->getMessage();
             die();
@@ -37,7 +42,7 @@ if(isset($_REQUEST["operation"])){//operation REQUEST englobe ts les types de pa
         try{
           print ("tous%");//% pour pouvoir faire un split sur le String de retour et donc le découper facilement
             $cnx = connexionPDO();//créer la connexion en récupérant la connexion de l'appel de la fonction connexionPDO()
-            $req = $cnx->prepare("select * from profil order by datemesure desc");//aller sur l'objet connexion et exécuter la méthode prepare qui attend une requete SQL et on veut récupérer dans l'ordre décroissant
+            $req = $cnx->prepare("select * from profil order by datecreation desc");//aller sur l'objet connexion et exécuter la méthode prepare qui attend une requete SQL et on veut récupérer dans l'ordre décroissant
             $req->execute();//exécuter la requete
             
             //récupération de tous les profils
@@ -59,12 +64,12 @@ if(isset($_REQUEST["operation"])){//operation REQUEST englobe ts les types de pa
              //récupération des données en post
              $lesdonnees =$REQUEST["lesdonnees"];//!mêmes noms à mettre dans android
              $donnee= json_decode($lesdonnees);//décoder le json
-             $datemesure=$donnee[0];
+             $id=$donnee[0];//j'ai remplacé $datemesure de serveurcoach par id car les 2 corresondaient à la PK !
                           
              // suppression dans la bd
              print("del%");
              $cnx= connexionPDO();
-             $larequete = " delete from profil where datemesure=\"$datemesure\"";
+             $larequete = " delete from profil where id=$id";
              print ($larequete);
              $req= $cnx->prepare($larequete);
              $req->execute();
