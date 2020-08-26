@@ -5,7 +5,7 @@ function connexionPDO(){
   $bd="remue_meninges";
   $serveur="localhost";
     try{
-        $conn=new PDO("mysql:host=$serveur;port=3306;dbname=$bd",$login,$mdp);//pour se connecter à la bd
+        $conn=new PDO("mysql:host=$serveur;port=3306;dbname=$bd;charset=utf8",$login,$mdp);//pour se connecter à la bd
         return $conn;
     }catch(PDOException $e){
         print $e;
