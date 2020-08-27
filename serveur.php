@@ -4,7 +4,7 @@ include "functions.php";
 //var_dump($_GET);//affiche le contenu d'une variable ex :http://localhost/serveur.php?langue=fr&category=1 va afficher les infos correspondantes dans ma table. le ? correspond à la requête
  
 //controle de réception de param
-if(isset($_GET["operation"])){//operation REQUEST englobe ts les types de param, operation == param dans android à envoyer
+if(isset($_REQUEST["operation"])){//operation REQUEST englobe ts les types de param, operation == param dans android à envoyer
     //demande de récupération de tous les profils
     if($_GET["operation"]=="tous"){//ou $_GET requete http (requete réseau)
         $langue=$_GET["langue"];//récupérer la langue choisie
@@ -121,9 +121,10 @@ if(isset($_GET["operation"])){//operation REQUEST englobe ts les types de param,
     
     // demande de modification
     elseif($_GET["operation"]=="update"){
+         $_PUT=$_GET;
          try{
              //récupération des données en post
-             $lesdonnees =$_GET["lesdonnees"];//format json de l'update! mêmes noms à mettre dans android PUT? GET?
+             $lesdonnees =$_PUT["lesdonnees"];//format json de l'update! mêmes noms à mettre dans android PUT? GET?
              $donnee= json_decode($lesdonnees,JSON_UNESCAPED_UNICODE);//décoder le json rq : le premier indice du tableau contiendra l'id
              $id=$donnee["id"];//recuperation de la PK !
              $langue=$donnee["langue"];
@@ -146,9 +147,10 @@ if(isset($_GET["operation"])){//operation REQUEST englobe ts les types de param,
         }
     }
     elseif($_GET["operation"]=="enreg"){
+         $_POST=$_REQUEST;
          try{
              //récupération des données en post
-             $lesdonnees =$_GET["lesdonnees"];//!mêmes noms à mettre dans android !!!POST? GET?
+             $lesdonnees =$_POST["lesdonnees"];//!mêmes noms à mettre dans android !!!POST? GET?
 
              //`langue`, `question`, `indice`, `reponse`, `category`, `level`
              $donnee= json_decode($lesdonnees,JSON_UNESCAPED_UNICODE);//décoder le json
