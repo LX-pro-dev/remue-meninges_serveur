@@ -155,9 +155,15 @@ if(isset($_REQUEST["operation"])){//operation REQUEST englobe ts les types de pa
              //`langue`, `question`, `indice`, `reponse`, `category`, `level`
              $donnee= json_decode($lesdonnees,JSON_UNESCAPED_UNICODE);//décoder le json
              $langue=$donnee["langue"];
-             $question=$donnee["question"];//pb de gestion de simples cotes dans le text!
-             $indice=$donnee["indice"];
-             $reponse=$donnee["reponse"];
+             $question2=$donnee["question"];//pb de gestion de simples cotes dans le text!
+             $question3=str_replace("'","\'",$question2);//le \ est bien ajouté devant les ' mais n'aura-t-on pas déjà formaté le texte avant de l'envoyer depuis android?
+             $question=str_replace('"',"\"",$question3);//ça ne marche pas quand on ajoute des " directement dans la string, la variable string devient vide
+             $indice2=$donnee["indice"];
+             $indice3=str_replace("'","\"",$indice2);
+             $indice=str_replace('"',"\"",$indice3);
+             $reponse2=$donnee["reponse"];
+             $reponse3=str_replace("'","\'",$reponse2);
+             $reponse=str_replace('"',"\"",$reponse3);
              $category=$donnee["category"];//faut-il le parser en int?
              $level=$donnee["level"];//faut-il le parser en int?intval(
             
