@@ -4,7 +4,7 @@ include "functions.php";
 //var_dump($_GET);//affiche le contenu d'une variable ex :http://localhost/serveur.php?langue=fr&category=1 va afficher les infos correspondantes dans ma table. le ? correspond à la requête
  
 //controle de réception de param
-if(isset($_REQUEST["operation"])){//operation REQUEST englobe ts les types de param, operation == param dans android à envoyer
+if(isset($_GET["operation"])){//operation REQUEST englobe ts les types de param, operation == param dans android à envoyer
     if(isset($_GET["langue"])){
     //demande de récupération de tous les profils
         if($_GET["operation"]=="tous"){//ou $_GET requete http (requete réseau)
@@ -120,92 +120,93 @@ if(isset($_REQUEST["operation"])){//operation REQUEST englobe ts les types de pa
             }
         }
     }
-    
-    elseif(isset($_REQUEST["lesdonnees"])){// demande de modification
-        if($_GET["operation"]=="update"){
-             $_PUT=$_GET;
-             try{
-                 //récupération des données en post
-                 $lesdonnees =$_PUT["lesdonnees"];//format json de l'update! mêmes noms à mettre dans android PUT? GET?
-                 $donnee= json_decode($lesdonnees,JSON_UNESCAPED_UNICODE);//décoder le json rq : le premier indice du tableau contiendra l'id
-                 $id=$donnee["id"];//recuperation de la PK !
-                 $langue=$donnee["langue"];
-                 $question=$donnee["question"];//pb de gestion de simples cotes dans le text!
-                 $indice=$donnee["indice"];
-                 $reponse=$donnee["reponse"];
-                 $category=$donnee["category"];//faut-il le parser en int?
-                 $level=$donnee["level"];//faut-il le parser en int?intval(            
-                 // modification dans la bd
-                 //print("update%");
-                 $cnx= connexionPDO();
-                 $larequete = "update carte set langue = '$langue', question = '$question', indice = '$indice', reponse = '$reponse', category = $category, level = $level where id=$id";//on garde la date de creation sans sa maj?
-                 print ($larequete);
-                 $req= $cnx->prepare($larequete);
-                 $req->execute();
+}
 
-            }catch(PDOException $e){
-                print "Erreur !%".$e->getMessage();
-                die();
-            }
-        }
-        elseif($_GET["operation"]=="enreg"){
-             $_POST=$_REQUEST;
-             try{
-                 //récupération des données en post
-                 $lesdonnees =$_POST["lesdonnees"];//!mêmes noms à mettre dans android !!!POST? GET?
-
-                 //`langue`, `question`, `indice`, `reponse`, `category`, `level`
-                 $donnee= json_decode($lesdonnees,JSON_UNESCAPED_UNICODE);//décoder le json
-                 $langue=$donnee["langue"];
-                 $question2=$donnee["question"];//pb de gestion de simples cotes dans le text!
-                 $question3=str_replace("'","\'",$question2);//le \ est bien ajouté devant les ' mais n'aura-t-on pas déjà formaté le texte avant de l'envoyer depuis android?
-                 $question=str_replace('"',"\"",$question3);//ça ne marche pas quand on ajoute des " directement dans la string, la variable string devient vide
-                 $indice2=$donnee["indice"];
-                 $indice3=str_replace("'","\"",$indice2);
-                 $indice=str_replace('"',"\"",$indice3);
-                 $reponse2=$donnee["reponse"];
-                 $reponse3=str_replace("'","\'",$reponse2);
-                 $reponse=str_replace('"',"\"",$reponse3);
-                 $category=$donnee["category"];//faut-il le parser en int?
-                 $level=$donnee["level"];//faut-il le parser en int?intval(
+elseif(isset($_POST)and isset($_PUT)){
+    var_dump($_POST); 
+    try{
+     //récupération des données en post
+     $lesdonnees =$_POST["lesdonnees"];//!mêmes noms à mettre dans android !!!POST? GET?
+     //`langue`, `question`, `indice`, `reponse`, `category`, `level`
+     $donnee= json_decode($lesdonnees,JSON_UNESCAPED_UNICODE);//décoder le json
+     $langue=$donnee["langue"];
+     $question=$donnee["question"];//pb de gestion de simples cotes dans le text!
+     $indice=$donnee["indice"];
+     $reponse=$donnee["reponse"];
+     $category=$donnee["category"];
+     $level=$donnee["level"];
 
 
-                 // insersion dans la bd
-                 //print("enreg%");
-                 $cnx= connexionPDO();
-                 $larequete = "insert into carte (langue,question,indice,reponse,category,level)";
-                 $larequete.="values('$langue','$question','$indice','$reponse','$category','$level')";
-                 //var_dump($larequete);
-                 print ($larequete);
-                 $req= $cnx->prepare($larequete);
-                 //var_dump($req);
-                 $req->execute();
+     // insersion dans la bd
+     //print("enreg%");
+     $cnx= connexionPDO();
+     $larequete = "insert into carte (langue,question,indice,reponse,category,level) ";
+     $larequete.="values(". $cnx->quote($langue).//$cnx->quote pr la gestion des cotes ds les text
+         " ,". $cnx->quote($question).
+         " ,". $cnx->quote($indice).
+         " ,". $cnx->quote($reponse).
+         " ,". $cnx->quote($category).
+         " ,". $cnx->quote($level).")";
+     //var_dump($larequete);
+     print ($larequete);
+     $req= $cnx->prepare($larequete);
+     //var_dump($req);
+     $req->execute();
 
 
-            }catch(PDOException $e){
-                print "Erreur !%".$e->getMessage();
-                die();
-            }
-        }
+    }catch(PDOException $e){
+        print "Erreur !%".$e->getMessage();
+        die();
     }
-    // demande de suppression
-    if($_GET["operation"]=="del"){// ou $_DELETE ou $_GET["operation"]=="del"
-        $_DELETE = $_GET; 
-        try{
-             //récupération des données en post
-             $id =$_DELETE["id"];//!mêmes noms à mettre dans android DELETE? GET?
-             // suppression dans la bd
-             //print("del%");
-             $cnx= connexionPDO();
-             $larequete = " delete from carte where id=$id";
-             print ($larequete);
-             $req= $cnx->prepare($larequete);
-             $req->execute();
-            
-        }catch(PDOException $e){
-            print "Erreur !%".$e->getMessage();
-            die();
-        }
+}
+        
+if(isset($_PUT)){// demande de modification
+     try{
+         //récupération des données en post
+         $lesdonnees =$_PUT["lesdonnees"];//format json de l'update! mêmes noms à mettre dans android PUT? GET?
+         $donnee= json_decode($lesdonnees,JSON_UNESCAPED_UNICODE);//décoder le json rq : le premier indice du tableau contiendra l'id
+         $id=$donnee["id"];//recuperation de la PK !
+         $langue=$donnee["langue"];
+         $question=$donnee["question"];//pb de gestion de simples cotes dans le text!
+         $indice=$donnee["indice"];
+         $reponse=$donnee["reponse"];
+         $category=$donnee["category"];//faut-il le parser en int?
+         $level=$donnee["level"];//faut-il le parser en int?intval(            
+         // modification dans la bd
+         //print("update%");
+         $cnx= connexionPDO();
+         $larequete = "update carte set langue = ".$cnx->quote($langue).
+             ", question = ".$cnx->quote($question).
+             ", indice = ".$cnx->quote($indice).
+             ", reponse = ".$cnx->quote($reponse).
+             ", category = ".$cnx->quote($category).
+             ", level = ".$cnx->quote($level).
+             " where id=".$cnx->quote($id).")";//on garde la date de creation sans sa maj?
+         print ($larequete);
+         $req= $cnx->prepare($larequete);
+         $req->execute();
+
+    }catch(PDOException $e){
+        print "Erreur !%".$e->getMessage();
+        die();
+    }
+}
+
+if(isset($_DELETE)){// ou $_DELETE ou $_GET["operation"]=="del"
+    try{
+         //récupération des données en post
+         $id =$_DELETE["id"];//!mêmes noms à mettre dans android DELETE? GET?
+         // suppression dans la bd
+         //print("del%");
+         $cnx= connexionPDO();
+         $larequete = " delete from carte where id=".$cnx->quote($id)."\"";
+         print ($larequete);
+         $req= $cnx->prepare($larequete);
+         $req->execute();
+
+    }catch(PDOException $e){
+        print "Erreur !%".$e->getMessage();
+        die();
     }
 }
 ?>
