@@ -164,15 +164,19 @@ if($_SERVER['REQUEST_METHOD']=='PUT'){// demande de modification
     }
 }
 
+
 if($_SERVER['REQUEST_METHOD']=='POST'){// demande de modification
 
-    
-    if(isset($_POST)){
+    $donnee = retrieveJsonPostData();
+
+    if(isset($donnee)){
+	
         try{
          //récupération des données en post
-         $lesdonnees =$_POST;//!mêmes noms à mettre dans android !!!POST? GET?
+         //$lesdonnees =$data;//!mêmes noms à mettre dans android !!!POST? GET?
          //`langue`, `question`, `indice`, `reponse`, `category`, `level`
-         $donnee= json_decode($lesdonnees,JSON_UNESCAPED_UNICODE);//décoder le json
+         //$donnee= json_decode($lesdonnees,JSON_UNESCAPED_UNICODE);//décoder le json
+	 
          $langue=$donnee["langue"];
          $question=$donnee["question"];//pb de gestion de simples cotes dans le text!
          $indice=$donnee["indice"];
