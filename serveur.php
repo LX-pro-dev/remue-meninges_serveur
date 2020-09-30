@@ -167,10 +167,10 @@ if($_SERVER['REQUEST_METHOD']=='PUT'){// demande de modification
 if($_SERVER['REQUEST_METHOD']=='POST'){// demande de modification
 
     
-    if(isset($_POST["lesdonnees"])){
+    if(isset($_POST)){
         try{
          //récupération des données en post
-         $lesdonnees =$_POST["lesdonnees"];//!mêmes noms à mettre dans android !!!POST? GET?
+         $lesdonnees =$_POST;//!mêmes noms à mettre dans android !!!POST? GET?
          //`langue`, `question`, `indice`, `reponse`, `category`, `level`
          $donnee= json_decode($lesdonnees,JSON_UNESCAPED_UNICODE);//décoder le json
          $langue=$donnee["langue"];
