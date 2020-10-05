@@ -122,46 +122,49 @@ if(isset($_GET["operation"])){//operation REQUEST englobe ts les types de param,
 }
 
 if($_SERVER['REQUEST_METHOD']=='PUT'){// demande de modification
-    $_PUT = array();
-    parse_str(file_get_contents("php://input"), $_PUT);
-    foreach ($_PUT as $key => $value)
-    {
-        echo $key . " : " . $value;
-    }
     
-    if(isset($_PUT["lesmodifs"])){ 
+    $donnee = retrieveJsonPostData();
+
+    if(isset($donnee)){
 
         try{
              //récupération des données en post
+             //$lesdonnees =$data;//!mêmes noms à mettre dans android !!!POST? GET?
+             //`langue`, `question`, `indice`, `reponse`, `category`, `level`
+             //$donnee= json_decode($lesdonnees,JSON_UNESCAPED_UNICODE);//décoder le json
 
-             $lesdonnees =$_PUT["lesdonnees"];//format json de l'update! mêmes noms à mettre dans android PUT? GET?
-             $donnee= json_decode($lesdonnees,JSON_UNESCAPED_UNICODE);//décoder le json rq : le premier indice du tableau contiendra l'id
-             $id=$donnee["id"];//recuperation de la PK !
              $langue=$donnee["langue"];
              $question=$donnee["question"];//pb de gestion de simples cotes dans le text!
              $indice=$donnee["indice"];
              $reponse=$donnee["reponse"];
-             $category=$donnee["category"];//faut-il le parser en int?
-             $level=$donnee["level"];//faut-il le parser en int?intval(            
-             // modification dans la bd
-             //print("update%");
+             $category=$donnee["category"];
+             $level=$donnee["level"];
+             $id=$donnee["id"];
+
+
+             // insersion dans la bd
+             //print("enreg%");
              $cnx= connexionPDO();
-             $larequete = "update carte set langue = ".$cnx->quote($langue).
-                 ", question = ".$cnx->quote($question).
-                 ", indice = ".$cnx->quote($indice).
-                 ", reponse = ".$cnx->quote($reponse).
-                 ", category = ".$cnx->quote($category).
-                 ", level = ".$cnx->quote($level).
-                 " where id=".$cnx->quote($id).")";//on garde la date de creation sans sa maj?
+             $larequete = "update carte set 'langue'=".$cnx->quote($langue).
+                 //je ne sais pas si les $cnx->quote sont utiles partout
+                 " ,'question'=".$cnx->quote($question).
+                 ",'indice'=".$cnx->quote($indice).
+                 ",'reponse'=".$cnx->quote$reponse.
+                 ",'category'=".$cnx->quote($category).
+                 ",'level'=".$cnx->quote($level).
+                 "where 'id'=".$cnx->quote($id).";"
+
              print ($larequete);
              $req= $cnx->prepare($larequete);
+
              $req->execute();
 
-        }catch(PDOException $e){
+
+            }catch(PDOException $e){
             print "Erreur !%".$e->getMessage();
             die();
-        }
-    }
+        }   
+    }      
 }
 
 
@@ -212,10 +215,12 @@ if($_SERVER['REQUEST_METHOD']=='POST'){// demande de modification
 
 if($_SERVER['REQUEST_METHOD']=='DELETE'){// demande de modification
     
-    //if(isset($_DELETE["id"])){
+    $donnee = retrieveJsonPostData();
+
+    if(isset($donnee)){
         try{
              //récupération des données en post
-             $id =$_GET["id"];//!mêmes noms à mettre dans android DELETE? GET?
+             $id =$donnee["id"];//!mêmes noms à mettre dans android DELETE? GET?
              // suppression dans la bd
              //print("del%");
              $cnx= connexionPDO();
@@ -228,7 +233,7 @@ if($_SERVER['REQUEST_METHOD']=='DELETE'){// demande de modification
             print "Erreur !%".$e->getMessage();
             die();
         }
-  //  }
+    }
 }
 
 ?>
