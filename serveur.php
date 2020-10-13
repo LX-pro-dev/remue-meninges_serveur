@@ -241,10 +241,10 @@ if($_SERVER['REQUEST_METHOD']=='DELETE'){// demande de modification
              //print("del%");
              $cnx= connexionPDO();
              $larequete = " delete from carte where id=".$cnx->quote($id);
-             //print ($larequete);
+             
              $req= $cnx->prepare($larequete);
              $req->execute();
-
+             print ($id);
         }catch(PDOException $e){
             print "Erreur !%".$e->getMessage();
             die();
