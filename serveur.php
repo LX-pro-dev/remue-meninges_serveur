@@ -124,7 +124,7 @@ if(isset($_GET["operation"])){//operation REQUEST englobe ts les types de param,
 if($_SERVER['REQUEST_METHOD']=='PUT'){// demande de modification
     
     $donnee = retrieveJsonPostData();
-
+    $res =[];
     if(isset($donnee)){
 
         try{
@@ -132,27 +132,36 @@ if($_SERVER['REQUEST_METHOD']=='PUT'){// demande de modification
              //$lesdonnees =$data;//!mêmes noms à mettre dans android !!!POST? GET?
              //`langue`, `question`, `indice`, `reponse`, `category`, `level`
              //$donnee= json_decode($lesdonnees,JSON_UNESCAPED_UNICODE);//décoder le json
+            
             $id=$donnee["id"];
+            $res["id"]=$id;
             $langue=$donnee["langue"];
             if(isset($donnee["question"])){
                 $question=$donnee["question"];
+                $res["question"]=$donnee["question"];
+                
             }
             if(isset($donnee["indice"])){
                 $indice=$donnee["indice"];
+                $res["indice"]=$indice;
             }
             if(isset($donnee["reponse"])){
                 $reponse=$donnee["reponse"]; 
+                $res["reponse"]=$reponse;
             }
             if(isset($donnee["category"])){
                 $category=$donnee["category"];
+                $res["category"]=$category;
             }
             if(isset($donnee["level"])){
                 $level=$donnee["level"];
+                $res["level"]=$level;
             }
             
              // insersion dans la bd
              $cnx= connexionPDO();
              $larequete = "update carte set `langue`=".$cnx->quote($langue);
+             $res["langue"]=$cnx->quote($langue);
                 if(isset($question)){//ça donne un pb de parse
                  $larequete.=",`question`=".$cnx->quote($question);
                 }
@@ -163,18 +172,19 @@ if($_SERVER['REQUEST_METHOD']=='PUT'){// demande de modification
                   $larequete.=",`reponse`=".$cnx->quote($reponse);
                 }
                 if(isset($category)){
-                   $larequete.=",`category`=".$cnx->quote($category);            
+                   $larequete.=",`category`=".$cnx->quote($category);     
                 }
                 if(isset($level)){
-                 $larequete.=",`level`=".$cnx->quote($level);               
+                 $larequete.=",`level`=".$cnx->quote($level);
                 }
                $larequete.=" where id=".$cnx->quote($id);
 
-             //print ($larequete);
+             
              $req= $cnx->prepare($larequete);
 
              $req->execute();
-
+            
+             print json_encode($res,JSON_UNESCAPED_UNICODE);
 
             }catch(PDOException $e){
             print "Erreur !%".$e->getMessage();
@@ -187,7 +197,7 @@ if($_SERVER['REQUEST_METHOD']=='PUT'){// demande de modification
 if($_SERVER['REQUEST_METHOD']=='POST'){// demande de modification
 
     $donnee = retrieveJsonPostData();
-
+    $res =[];
     if(isset($donnee)){
 	
         try{
@@ -195,7 +205,7 @@ if($_SERVER['REQUEST_METHOD']=='POST'){// demande de modification
          //$lesdonnees =$data;//!mêmes noms à mettre dans android !!!POST? GET?
          //`langue`, `question`, `indice`, `reponse`, `category`, `level`
          //$donnee= json_decode($lesdonnees,JSON_UNESCAPED_UNICODE);//décoder le json
-	 
+
          $langue=$donnee["langue"];
          $question=$donnee["question"];//pb de gestion de simples cotes dans le text!
          $indice=$donnee["indice"];
@@ -203,6 +213,13 @@ if($_SERVER['REQUEST_METHOD']=='POST'){// demande de modification
          $category=$donnee["category"];
          $level=$donnee["level"];
 
+            $res["id"]=$donnee["id"];
+            $res["langue"]=$langue;
+            $res["question"]=$question;
+            $res["indice"]=$indice;
+            $res["reponse"]=$reponse;
+            $res["category"]=$category;
+            $res["level"]=$level;
 
          // insersion dans la bd
          //print("enreg%");
@@ -215,12 +232,12 @@ if($_SERVER['REQUEST_METHOD']=='POST'){// demande de modification
              " ,". $cnx->quote($category).
              " ,". $cnx->quote($level).")";
         
-         print ($larequete);
+         
          $req= $cnx->prepare($larequete);
         
          $req->execute();
-
-
+        print json_encode($res,JSON_UNESCAPED_UNICODE);
+            
         }catch(PDOException $e){
             print "Erreur !%".$e->getMessage();
             die();
